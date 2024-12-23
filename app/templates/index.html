@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="homepage">
+    <div class="left-block">
+        <div class="news-grid">
+            {% for news_item in news %}
+            <div class="news-item">
+                <a href="/news/{{ news_item.id }}" style="max-height: 80px">
+                    <img src="/news/{{ news_item.id }}/image" alt="Изображение новости" class="actual_news-image">
+                    <h3>{{ news_item.title }}</h3>
+                </a>
+            </div>
+            {% endfor %}
+            {% if news|length == 0 %}
+            <p>Нет доступных новостей.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="right-block">
+        <h2 style="text-align: center; font-size: 35px">О проекте</h2>
+        <p style="font-size: 23px">Наш проект посвящен поддержке и развитию спортивного сообщества Карелии, созданию условий для популяризации спорта и здорового образа жизни.</p>
+        <p style="font-size: 23px">Мы предоставляем актуальные новости о спортивных событиях нашей республики, делимся достижениями карельских спортсменов и вдохновляем на новые победы. Наша миссия — объединить людей через спорт и подчеркнуть значимость активного образа жизни.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="gallery-page-container">
+  <div class="gallery-grid">
+    {% for achievement in achievements %}
+    <div class="gallery-item">
+      <a href="/achievements/{{ achievement.id }}">
+        <img src="/achievements/{{ achievement.id }}/image/{{ achievement.photos[0].id }}"
+             alt="{{ achievement.title }}">
+        <h3>{{ achievement.title }}</h3>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Пагинация -->
+  <div class="pagination">
+    {% if current_page > 1 %}
+    <a href="?page={{ current_page - 1 }}" class="pagination-link">« Назад</a>
+    {% endif %}
+
+    {% for i in range(1, total_pages + 1) %}
+    <a href="?page={{ i }}" class="pagination-link {% if i == current_page %}active{% endif %}">
+      {{ i }}
+    </a>
+    {% endfor %}
+
+    {% if current_page < total_pages %}
+    <a href="?page={{ current_page + 1 }}" class="pagination-link">Вперед »</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

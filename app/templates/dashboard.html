@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .form-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .no-data {
+            text-align: center;
+            color: #888;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal_image {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal_image-content {
+            background-color: transparent;
+            margin: auto;
+            padding: 20px;
+            border: none;
+            width: 80%;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal_image-content img {
+            max-width: 90%;
+            max-height: 90%;
+            display: block;
+            margin: auto;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Панель администратора</h1>
+</header>
+
+<div class="container">
+    <div class="form-wrapper">
+        <div class="card">
+            <h2>Добавить новость</h2>
+            <form action="/news/" method="post" enctype="multipart/form-data">
+                <label for="title">Заголовок:</label>
+                <input type="text" id="title" name="title" required>
+
+                <label for="content">Контент:</label>
+                <textarea id="content" name="content" rows="4" required></textarea>
+
+                <label for="image">Загрузить изображение:</label>
+                <input type="file" id="image" name="image">
+
+                <button type="submit">Добавить новость</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <form action="/achievements/" method="post" enctype="multipart/form-data">
+                <label for="title">Название достижения:</label>
+                <input type="text" id="title" name="title" required>
+
+                <label for="sport_type">Вид спорта:</label>
+                <input type="text" id="sport_type" name="sport_type" required>
+
+                <label for="athlete_name">Имя спортсмена/Название команды:</label>
+                <input type="text" id="athlete_name" name="athlete_name" required>
+
+                <label for="event_date">Дата события:</label>
+                <input type="date" id="event_date" name="event_date" required>
+
+                <label for="event_place">Место события:</label>
+                <input type="text" id="event_place" name="event_place" required>
+
+                <label for="description">Описание:</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+
+                <label for="images">Загрузить изображения:</label>
+                <input type="file" id="images" name="images" multiple>
+
+                <button type="submit">Добавить достижение</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Список новостей</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Заголовок</th>
+                    <th>Дата</th>
+                    <th>Изображение</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if news %}
+                {% for news_item in news %}
+                <tr>
+                    <td>{{ news_item.title }}</td>
+                    <td>{{ news_item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if news_item.image_data %}
+                            <img src="/news/{{ news_item.id }}/image" alt="Изображение новости" style="max-width: 100px; cursor: pointer;" onclick="openImageModal('/news/{{ news_item.id }}/image')">
+                        {% else %}
+                            Нет изображения
+                        {% endif %}
+                    </td>
+                    <td>
+                    <button
+                        class="edit-button"
+                        data-id="{{ news_item.id }}"
+                        data-title="{{ news_item.title | e }}"
+                        data-content="{{ news_item.content | e }}"
+                        onclick="openEditNewsModal(this)">
+                        Редактировать
+                    </button>
+                    |
+                    <a href="/news/{{ news_item.id }}/delete">Удалить</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3" class="no-data">Нет новостей</td>
+                </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Список достижений</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Вид Спорта</th>
+                    <th>Спортсмен</th>
+                    <th>Дата</th>
+                    <th>Место</th>
+                    <th>Изображения</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if achievements %}
+                {% for achievement in achievements %}
+                <tr>
+                    <td>{{ achievement.title }}</td>
+                    <td>{{ achievement.sport_type }}</td>
+                    <td>{{ achievement.athlete_name }}</td>
+                    <td>{{ achievement.event_date }}</td>
+                    <td>{{ achievement.event_place }}</td>
+                    <td>
+                        <div class="achievement-images">
+                        {% if achievement.id in achievement_images and achievement_images[achievement.id] %}
+                            {% for image in achievement_images[achievement.id] %}
+                            <img src="/achievements/{{ achievement.id }}/image/{{ image.id }}"
+                                 alt="Изображение достижения"
+                                 style="max-width: 100px; cursor: pointer;"
+                                 onclick="openImageModal('/achievements/{{ achievement.id }}/image/{{ image.id }}')">
+                            {% endfor %}
+                        {% else %}
+                            <p>Нет изображения</p>
+                        {% endif %}
+                    </div>
+                    </td>
+                    <td>
+                        <button class="edit-button"
+                                data-id="{{ achievement.id }}"
+                                data-title="{{ achievement.title | e }}"
+                                data-sport_type="{{ achievement.sport_type | e }}"
+                                data-athlete_name="{{ achievement.athlete_name | e }}"
+                                data-event_date="{{ achievement.event_date | e }}"
+                                data-event_place="{{ achievement.event_place | e }}"
+                                data-description="{{ achievement.description | e }}"
+                                onclick="openEditAchievementModal(this)">Редактировать</button> |
+                        <a href="/achievements/{{ achievement.id }}/delete">Удалить</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="no-data">Нет достижений</td>
+                </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    </div>
+</div>
+
+<div id="editNewsModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('editNewsModal')">&times;</span>
+        <h2>Редактировать новость</h2>
+        <form id="editNewsForm" method="post" enctype="multipart/form-data" action="">
+            <input type="hidden" id="editNewsId" name="id">
+            <label for="editNewsTitle">Заголовок:</label>
+            <input type="text" id="editNewsTitle" name="title" required>
+
+            <label for="editNewsContent">Контент:</label>
+            <textarea id="editNewsContent" name="content" rows="4" required></textarea>
+
+            <label for="editNewsImage">Загрузить новое изображение:</label>
+            <input type="file" id="editNewsImage" name="image">
+
+            <button type="submit">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+
+
+<div id="editAchievementModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('editAchievementModal')">&times;</span>
+        <h2>Редактировать достижение</h2>
+        <form id="editAchievementForm" method="post" enctype="multipart/form-data" action="">
+            <input type="hidden" id="editAchievementId" name="id">
+
+            <label for="editAchievementTitle">Название достижения:</label>
+            <input type="text" id="editAchievementTitle" name="title" required>
+
+            <label for="editAchievementSport_type">Вид спорта:</label>
+            <input type="text" id="editAchievementSport_type" name="sport_type" required>
+
+            <label for="editAthleteName">Имя спортсмена:</label>
+            <input type="text" id="editAthleteName" name="athlete_name" required>
+
+            <label for="editEventDate">Дата события:</label>
+            <input type="date" id="editEventDate" name="event_date" required>
+
+            <label for="editEventPlace">Дата события:</label>
+            <input type="text" id="editEventPlace" name="event_place" required>
+
+            <label for="editDescription">Описание:</label>
+            <textarea id="editDescription" name="description" rows="4" required></textarea>
+
+            <label for="editAchievementImages">Загрузить новые изображения:</label>
+            <input type="file" id="editAchievementImages" name="new_images" multiple>
+            <button type="submit">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+
+
+<div id="imageViewModal" class="modal_image">
+    <div class="modal_image-content">
+        <span class="close" onclick="closeModal('imageViewModal')">&times;</span>
+        <img id="imageView" src="" alt="Изображение">
+    </div>
+</div>
+
+
+
+
+
+<script>
+    function openEditNewsModal(element) {
+        const id = element.getAttribute("data-id");
+        const title = element.getAttribute("data-title");
+        const content = element.getAttribute("data-content");
+
+        document.getElementById('editNewsId').value = id;
+        document.getElementById('editNewsTitle').value = title;
+        document.getElementById('editNewsContent').value = content;
+        document.getElementById('editNewsForm').action = `/news/${id}/edit`;
+        document.getElementById('editNewsModal').style.display = 'block';
+    }
+
+
+    function openEditAchievementModal(element) {
+        const id = element.getAttribute("data-id");
+        const title = element.getAttribute("data-title");
+        const sport_type = element.getAttribute("data-sport_type");
+        const athleteName = element.getAttribute("data-athlete_name");
+        const eventDate = element.getAttribute("data-event_date");
+        const eventPlace = element.getAttribute("data-event_place");
+        const description = element.getAttribute("data-description");
+
+        document.getElementById('editAchievementId').value = id;
+        document.getElementById('editAchievementTitle').value = title;
+        document.getElementById('editAchievementSport_type').value = sport_type;
+        document.getElementById('editAthleteName').value = athleteName;
+        document.getElementById('editEventDate').value = eventDate;
+        document.getElementById('editEventPlace').value = eventPlace;
+        document.getElementById('editDescription').value = description;
+        document.getElementById('editAchievementForm').action = `/achievements/${id}/edit`;
+        document.getElementById('editAchievementModal').style.display = 'block';
+    }
+
+
+
+    function openImageModal(imageUrl) {
+        const modal = document.getElementById('imageViewModal');
+        const modalImage = document.getElementById('imageView');
+        modalImage.src = imageUrl;
+        modal.style.display = 'block';
+
+        modal.onclick = function (event) {
+            if (event.target === modal) {
+                closeModal('imageViewModal');
+            }
+        };
+        document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'block';
+
+    modal.onclick = function (event) {
+        if (event.target === modal) {
+            closeModal(modalId);
+        }
+    };
+        document.addEventListener('keydown', handleEscapeKey);
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+
+    document.removeEventListener('keydown', handleEscapeKey);
+}
+
+function handleEscapeKey(event) {
+    if (event.key === 'Escape') {
+        const modals = document.querySelectorAll('.modal, .modal_image');
+        modals.forEach((modal) => {
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
+    }
+}
+
+</script>
+
+</body>
+</html>
+

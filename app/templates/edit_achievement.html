@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать достижение</title>
+</head>
+<body>
+    <h1>Редактировать достижение</h1>
+    <form action="/achievements/{{ achievement.id }}/edit" method="post" enctype="multipart/form-data">
+        <label for="title">Название достижения:</label>
+        <input type="text" id="title" name="title" value="{{ achievement.title }}" required>
+
+        <label for="athlete_name">Имя спортсмена:</label>
+        <input type="text" id="athlete_name" name="athlete_name" value="{{ achievement.athlete_name }}" required>
+
+        <label for="event_date">Дата события:</label>
+        <input type="date" id="event_date" name="event_date" value="{{ achievement.event_date }}" required>
+
+        <label for="description">Описание:</label>
+        <textarea id="description" name="description" rows="4" required>{{ achievement.description }}</textarea>
+
+        <label for="image">Загрузить новое изображение:</label>
+        <input type="file" id="image" name="image">
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+</body>
+</html>

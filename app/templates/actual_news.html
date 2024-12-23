@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Актуальные новости{% endblock %}
+
+{% block content %}
+<main class="news-container">
+
+    <div class="news-rows">
+        {% for news_item in news %}
+        <div class="actual_news-item">
+            <div class="actual_news-text">
+                <a href="/news/{{ news_item.id }}" style="text-decoration: underline;
+                                                          text-decoration-color: black;">
+                    <h3>{{ news_item.title }}</h3>
+                </a>
+                <p>{{ news_item.content | truncate_words(40) }}  </p>
+
+            </div>
+            <div class="actual_news-images">
+                <img src="/news/{{ news_item.id }}/image" alt="Изображение новости" class="actual_news-image">
+            </div>
+        </div>
+        {% endfor %}
+        {% if news|length == 0 %}
+        <p>Нет доступных новостей.</p>
+        {% endif %}
+    </div>
+    <div class="pagination">
+        {% if current_page > 1 %}
+        <a href="?page={{ current_page - 1 }}" class="pagination-link">« Назад</a>
+        {% endif %}
+
+        {% for i in range(1, total_pages + 1) %}
+        <a href="?page={{ i }}" class="pagination-link {% if i == current_page %}active{% endif %}">
+            {{ i }}
+        </a>
+        {% endfor %}
+
+        {% if current_page < total_pages %}
+        <a href="?page={{ current_page + 1 }}" class="pagination-link">Вперед »</a>
+        {% endif %}
+    </div>
+
+</main>
+
+{% endblock %}

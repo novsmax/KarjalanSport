@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="single-news-page">
+    <div class="single-news-main">
+        <div class="single-news-photo">
+            <img src="/news/{{ news_item.id }}/image" alt="Фотография новости">
+        </div>
+        <div class="single-news-content">
+            <div class="single-news-text">
+                <h2>{{ news_item.title }}</h2>
+                <p>{{ news_item.content }}</p>
+            </div>
+            <aside class="single-news-other">
+                <h3>Другие новости карельского спорта:</h3>
+                <ul>
+                    {% for other_news in recent_news %}
+                    <li><a href="/news/{{ other_news.id }}">{{ other_news.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </aside>
+        </div>
+    </div>
+</div>
+{% endblock %}

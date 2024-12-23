@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="achievements-archive">
+    <div class="filter-menu">
+        <form method="get" action="/achievements_archive/" style="display: flex; width: 100%;">
+            <div class="filter-fields">
+                <label for="sport">Вид спорта:</label>
+                <select id="sport" name="sport">
+                    <option value="">Все</option>
+                    {% for sport in sport_types %}
+                    <option value="{{ sport }}" {% if sport == selected_sport %}selected{% endif %}>{{ sport }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="year">Год:</label>
+                <select id="year" name="year">
+                    <option value="">Все</option>
+                    {% for year in years %}
+                    <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="athlete">Спортсмен/Команда:</label>
+                <select id="athlete" name="athlete">
+                    <option value="">Все</option>
+                    {% for name in names %}
+                    <option value="{{ name }}" {% if name == selected_athlete %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-buttons">
+                <button type="reset" class="reset-filters" onclick="window.location.href='/achievements_archive/'">Сбросить фильтры</button>
+                <button type="submit" class="apply-filters">Применить фильтры</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="achievements-list">
+        {% if achievements %}
+        {% for achievement in achievements %}
+        <div class="achievement-item">
+            <div class="achievement-content">
+                <h3>{{ achievement.title }}</h3>
+                <div class="achievement-details">
+                    <p><strong>Спортсмен/Команда:</strong> {{ achievement.athlete_name }}</p>
+                    <p><strong>Место проведения:</strong> {{ achievement.event_place }}</p>
+                    <p><strong>Год:</strong> {{ achievement.event_date.year }}</p>
+                </div>
+                <a href="/achievements/{{ achievement.id }}">Подробная информация</a>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>Нет достижений по выбранным фильтрам.</p>
+        {% endif %}
+    </div>
+
+
+    <div class="pagination">
+        {% if current_page > 1 %}
+        <a href="?page={{ current_page - 1 }}" class="pagination-link">« Назад</a>
+        {% endif %}
+
+        {% for i in range(1, total_pages + 1) %}
+        <a href="?page={{ i }}" class="pagination-link {% if i == current_page %}active{% endif %}">
+            {{ i }}
+        </a>
+        {% endfor %}
+
+        {% if current_page < total_pages %}
+        <a href="?page={{ current_page + 1 }}" class="pagination-link">Вперед »</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

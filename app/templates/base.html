@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Сайт{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+</head>
+<body>
+    <div class="wrapper">
+    <header>
+        <nav class="iconsbar">
+            <div class="icons">
+                <a href="/" class="left-icon">
+                    <img src="/static/icons8-medal-olimpiyskaya-100.png" alt="Главная">
+                </a>
+                <div class="right-icons">
+                    <img src="/static/icons8-shtanga-100.png">
+                    <img src="/static/icons8-shakhmatnaya-doska-100.png">
+                    <img src="/static/icons8-khokkey-100.png">
+                    <img src="/static/icons8-krugly-basseyn-100.png">
+                    <img src="/static/icons8-voleybol-100.png">
+                </div>
+            </div>
+        </nav>
+        <nav class="navbar">
+            <ul class="menu">
+                <li><a href="/actual_news">Актуальные новости</a></li>
+                <li><a href="/achievements_archive">Архив достижений</a></li>
+                <li><a href="/gallery">Галерея</a></li>
+                <li><a href="/about">О нас</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="content-wrapper">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>© Достижения карельского спорта</p>
+    </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="achievement-gallery-title">
+  <a href="/achievements/{{ achievement.id }}">{{ achievement.title }}</a>
+</div>
+<div class="gallery-container">
+  <button class="slider-arrow left" onclick="changeSlide(-1)">&#10094;</button>
+  <div class="slider">
+
+    <div class="slider-images">
+      {% for photo in photos %}
+      <img src="/achievements/{{ achievement.id }}/image/{{ photo.id }}"
+           class="slide {% if loop.first %}active{% endif %}"
+           alt="Фотография достижения"
+           onclick="openImageModal('/achievements/{{ achievement.id }}/image/{{ photo.id }}')">
+      {% endfor %}
+    </div>
+
+  </div>
+  <button class="slider-arrow right" onclick="changeSlide(1)">&#10095;</button>
+</div>
+<div id="imageViewModal" class="modal_image">
+  <div class="modal_image-content">
+    <span class="close" onclick="closeModal('imageViewModal')">&times;</span>
+    <img id="imageView" src="" alt="Изображение">
+  </div>
+</div>
+
+<script>
+  let currentSlide = 0;
+
+  function changeSlide(direction) {
+    const slides = document.querySelectorAll('.slide');
+    slides[currentSlide].classList.remove('active');
+
+    currentSlide = (currentSlide + direction + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+
+    const sliderImages = document.querySelector('.slider-images');
+    const offset = currentSlide * 100;
+    sliderImages.style.transform = `translateX(-${offset}%)`;
+  }
+
+  function openImageModal(imageUrl) {
+    const modal = document.getElementById('imageViewModal');
+    const modalImage = document.getElementById('imageView');
+    modalImage.src = imageUrl;
+    modal.style.display = 'block';
+
+    modal.onclick = function (event) {
+      if (event.target === modal) {
+        closeModal('imageViewModal');
+      }
+    };
+    document.addEventListener('keydown', handleEscapeKey);
+  };
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+
+    document.removeEventListener('keydown', handleEscapeKey);
+  }
+
+  function handleEscapeKey(event) {
+    if (event.key === 'Escape') {
+      const modals = document.querySelectorAll('.modal, .modal_image');
+      modals.forEach((modal) => {
+        if (modal.style.display === 'block') {
+          modal.style.display = 'none';
+        }
+      });
+    }
+  }
+</script>
+{% endblock %}

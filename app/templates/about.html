@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="about-container">
+  <!-- Левая колонка с фото -->
+  <div class="about-photos-column">
+    {% for photo in random_photos[:2] %}
+    <div class="about-photo-item">
+      <img src="/achievements/{{ photo.achievement_id }}/image/{{ photo.id }}" alt="Фотография достижения">
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Текстовый блок по центру -->
+  <div class="about-text-block">
+    <h2>О нас</h2>
+    <p>
+      Добро пожаловать на сайт спортивных достижений Карелии! Здесь мы собрали лучшие спортивные результаты, достижения и события.
+      Наша цель - стимулировать спорт и здоровый образ жизни.
+    </p>
+    <p>
+      <strong>Контакты:</strong><br>
+      Почта: <a href="mailto:info@sports-karelia.ru">info@sports-karelia.ru</a><br>
+      Телефон: +7 (8142) 123-456<br>
+      Адрес: г. Петрозаводск, ул. Спортивная, 10
+    </p>
+  </div>
+
+  <!-- Правая колонка с фото -->
+  <div class="about-photos-column">
+    {% for photo in random_photos[2:4] %}
+    <div class="about-photo-item">
+      <img src="/achievements/{{ photo.achievement_id }}/image/{{ photo.id }}" alt="Фотография достижения">
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
