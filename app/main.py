@@ -4,18 +4,41 @@ from fastapi.responses import RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 from database import engine, get_db
 from models import Base, News, Achievement, AchievementPhoto
 from crud import create_news, create_achievement
 from typing import List
 from sqlalchemy import extract, func
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory="templates")
+app.add_middleware(SessionMiddleware, secret_key="your-secret-key", max_age=timedelta(days=1))
+
+VALID_USERNAME = "admin"
+VALID_PASSWORD = "password123"
+
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.post("/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    if username == VALID_USERNAME and password == VALID_PASSWORD:
+        request.session["user"] = username
+        return RedirectResponse(url="/admin/dashboard", status_code=302)
+    raise HTTPException(status_code=400, detail="Invalid username or password")
+
+
+@app.post("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/", status_code=302)
 
 
 def truncate_words(content, word_limit):
@@ -33,6 +56,9 @@ def homepage(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/admin/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request, db: Session = Depends(get_db)):
+    if "user" not in request.session:
+        return RedirectResponse(url="/login", status_code=302)
+
     news = db.query(News).all()
     achievements = db.query(Achievement).all()
     achievement_images = {
@@ -47,7 +73,7 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
             "news": news,
             "achievements": achievements,
             "achievement_images": achievement_images,
-        }
+        },
     )
 
 

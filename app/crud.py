@@ -3,7 +3,11 @@ from models import News, Achievement, AchievementPhoto
 from datetime import datetime
 
 def create_news(db: Session, title: str, content: str, image: bytes):
-    db_news = News(title=title, content=content, image_data=image)
+    db_news = News(
+        title=title,
+        content=content,
+        image_data=image
+    )
     db.add(db_news)
     db.commit()
     db.refresh(db_news)
