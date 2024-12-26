@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordBearer
 from starlette.middleware.sessions import SessionMiddleware
 from database import engine, get_db
 from models import Base, News, Achievement, AchievementPhoto
@@ -17,10 +18,10 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 Base.metadata.create_all(bind=engine)
 templates = Jinja2Templates(directory="templates")
-app.add_middleware(SessionMiddleware, secret_key="your-secret-key", max_age=timedelta(days=1))
+app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-VALID_USERNAME = "admin"
-VALID_PASSWORD = "password123"
+
 
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
@@ -405,7 +406,8 @@ def edit_achievement(
     return RedirectResponse(url="/admin/dashboard", status_code=303)
 
 
-
+VALID_USERNAME = "admin"
+VALID_PASSWORD = "admin"
 
 
 
